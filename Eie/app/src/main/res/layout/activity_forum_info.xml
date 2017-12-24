@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_above="@+id/bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@android:color/black">
+
+            <ImageView
+                android:id="@+id/foruminfo_back"
+                android:layout_width="@dimen/default_long_margin"
+                android:layout_height="@dimen/default_long_margin"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/default_tiny_padding"
+                android:background="@mipmap/ic_arrow_back_white" />
+        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/re"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@android:color/white"
+
+                    android:padding="5dp">
+
+                    <com.example.shengxi.eie.utils.CircleImageView
+                        android:id="@+id/foruminfo_head_circleview"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:src="@mipmap/ico_user_default" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@+id/foruminfo_head_circleview"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/foruminfo_head_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="5dp"
+                            android:textColor="@android:color/holo_green_dark"
+                            android:layout_weight="1"
+                            android:text="sdfasdfas "
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/foruminfo_head_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="sdfasdfasdf "
+                            android:textSize="10sp"
+                            android:textColor="@color/gray_20" />
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+                <TextView
+                    android:id="@+id/foruminfo_head_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/re"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@android:color/white"
+                    android:padding="5dp" />
+
+
+                <ListView android:layout_marginTop="20dp"
+                    android:paddingLeft="10dp"
+                    android:background="@android:color/white"
+                    android:id="@+id/foruminfo_refrelist"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/foruminfo_head_main"></ListView>
+                <!--<com.handmark.pulltorefresh.library.PullToRefreshListView-->
+                <!--android:id="@+id/foruminfo_refrelist"-->
+                <!--android:layout_below="@+id/foruminfo_head_main"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_height="wrap_content">-->
+
+
+                <!--</com.handmark.pulltorefresh.library.PullToRefreshListView>-->
+
+            </RelativeLayout>
+
+        </ScrollView>
+    </LinearLayout>
+    <LinearLayout android:id="@+id/bottom"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="@color/black_80"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize">
+        <EditText
+            android:id="@+id/forumInfo_reText"
+            android:layout_width="0dp"
+
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="@dimen/default_general_margin"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:drawablePadding="@dimen/default_general_margin"
+            android:ellipsize="start"
+            android:hint="评论"
+            android:inputType="textVisiblePassword"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/gray_20"
+            android:textSize="@dimen/default_medium_text_size" />
+        <Button
+            android:id="@+id/forumInfo_btn_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/black_80"
+            android:gravity="center"
+            android:text="发表"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/default_medium_text_size" />
+    </LinearLayout>
+</RelativeLayout>

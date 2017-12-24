@@ -1,0 +1,29 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="default_grow_margin">20dp</dimen>
+    <dimen name="default_general_margin">10dp</dimen>
+    <dimen name="default_tiny_margin">3dp</dimen>
+    <dimen name="default_tiny_padding">5dp</dimen>
+    <!--common text size-->
+    <dimen name="default_tiny_text_size">12sp</dimen>
+    <dimen name="default_small_text_size">14sp</dimen>
+    <dimen name="default_medium_text_size">16sp</dimen>
+    <dimen name="default_big_text_size">18sp</dimen>
+    <dimen name="default_big_large_text_size">22sp</dimen>
+    <dimen name="navigation_avatar_size">74dp</dimen>
+    <dimen name="action_bar_default_height">48dp</dimen>
+    <dimen name="line_height">1dp</dimen>
+    <dimen name="line_width">120dp</dimen>
+    <dimen name="default_long_margin">30dp</dimen>
+    <dimen name="login_button_height">45dp</dimen>
+    <!--home live size-->
+    <dimen name="live_video_player_height">280dp</dimen>
+    <dimen name="live_button_margin_bottom">60dp</dimen>
+    <dimen name="live_entrance_image_size">50dp</dimen>
+    <dimen name="live_item_layout_height">190dp</dimen>
+    <dimen name="live_item_image_height">120dp</dimen>
+    <dimen name="live_item_title_image_size">25dp</dimen>
+
+</resources>
