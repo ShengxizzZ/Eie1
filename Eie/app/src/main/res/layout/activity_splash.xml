@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_above="@+id/ll"
+        android:layout_height="match_parent">
+        <ImageView android:id="@+id/splash_imageview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:scaleType="fitXY"/>
+        <TextView android:layout_gravity="end|bottom"
+            android:layout_width="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:text="广告"/>
+
+    </FrameLayout>
+
+
+
+    <LinearLayout android:id="@+id/ll"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="安卓在线教育"
+            android:textSize="20sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            android:gravity="center_horizontal|center_vertical"
+            android:textColor="@android:color/black"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="方便/简单/快捷"/>
+    </LinearLayout>
+</RelativeLayout>
