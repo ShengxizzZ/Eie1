@@ -1,15 +1,17 @@
 package com.example.shengxi.eie.utils;
 
 /**
+ *
  * Created by ShengXi on 2017/4/12.
  */
 
 public class DataUtils {
 
     public static final String classMenuServlet = DataUtils.baseUrl+"/AppSwevlet/servlet/ClassMenuServlet";
-    public static final String baseUrl = "http://192.168.1.102:8895";
+    public static final String baseUrl = "http://172.27.35.1:8895";
     public static final String LoginUrl = DataUtils.baseUrl+"/AppSwevlet/servlet/LoginServlet";
     public static final String ForumUrl = DataUtils.baseUrl+"/AppSwevlet/servlet/ForumServlet";
+    public static final String BASEURL = "http://172.27.35.1:8895/AppSwevlet/servlet/";
     public static final String CommentsUrl = DataUtils.baseUrl+"/AppSwevlet/servlet/ForumCommentsServlet";
     public static final String CommentsUpUrl = DataUtils.baseUrl+"/AppSwevlet/servlet/ForumCommentsUpDataServlet";
     public static final String RepresentsUrl = DataUtils.baseUrl+"/AppSwevlet/servlet/RepresentServlet";

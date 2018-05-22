@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shengxi.eie.R;
+import com.example.shengxi.eie.base.BaseHandler;
 import com.example.shengxi.eie.beans.students.StudentBean;
 import com.example.shengxi.eie.beans.students.Users;
 import com.example.shengxi.eie.utils.DataBaseHelper;
@@ -29,73 +30,75 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import rx.Observable;
+import rx.Subscriber;
+
 /**
+ *
  * Created by ShengXi on 2017/4/19.
  */
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity{
 
-    private EditText userId;
-    private EditText passWord;
-    private TextView registerTv;
-    private Button btnLogin;
-    private ImageView loginBack;
+    @BindView(R.id.et_username)
+    EditText userId;
+
+    @BindView(R.id.et_password)
+    EditText passWord;
+
+    @BindView(R.id.tv_regist)
+    TextView registerTv;
+
+    @BindView(R.id.btn_login)
+    Button btnLogin;
+
+    @BindView(R.id.login_back)
+    ImageView loginBack;
+
     static String LOGIN_FAILED = "FAILED";
     static String LOGIN_SUCCEEDED = "SUCCESS";
+    private final static int SUCCESS = 111;
+    private final static int FAILURE = 222;
     private String id;
     private String password;
     private NetUtils netUtils  = new NetUtils();
-    private Handler handler;
     private StudentBean studentBean;
     private DataBaseHelper dbHelper;
 
-
+    Handler handler = new BaseHandler<>(new BaseHandler.BaseHandlerCallBack() {
+        @Override
+        public void callBack(Message msg) {
+            // dialog.dismiss();
+            if (msg.what == SUCCESS) {  // 处理发送线程传回的消息
+                setDataToSql();
+                finish();
+            }else if (msg.what == FAILURE){
+                Toast.makeText(LoginActivity.this, "账号和密码不匹配", Toast.LENGTH_SHORT).show();
+            }
+        }
+    });
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    protected int getViewId() {
+        return R.layout.activity_login;
+    }
+
+    @Override
+    protected void initView() {
+
         dbHelper = new DataBaseHelper(this);
-        initView();
-
-        handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-               // dialog.dismiss();
-                if (msg.what == 111) {  // 处理发送线程传回的消息
-
-                   setDataToSql();
-                    finish();
-                }else if (msg.what == 222){
-
-                    Toast.makeText(LoginActivity.this, "账号和密码不匹配", Toast.LENGTH_SHORT).show();
-                }
-            }};
-
+        ButterKnife.bind(this);
     }
 
-    private void setDataToSql() {
+    @Override
+    protected void setData() {
 
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        ContentValues v = new ContentValues();
-        v.put("id",studentBean.student.get(0).sId);
-        v.put("name",studentBean.student.get(0).sName);
-        v.put("img",studentBean.student.get(0).sImg);
-        db.insert("student",null,v);
-        db.close();
-    }
-
-
-    private void initView() {
-        registerTv = (TextView) findViewById(R.id.tv_regist);
-        userId = (EditText) findViewById(R.id.et_username);
-        loginBack = (ImageView) findViewById(R.id.login_back);
-        passWord = (EditText) findViewById(R.id.et_password);
-        btnLogin = (Button) findViewById(R.id.btn_login);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (netUtils.netState(LoginActivity.this)) { //检查网络
+                if (NetUtils.netState(LoginActivity.this)) { //检查网络
                     if (userId.getText().toString().equals(""))
                         Toast.makeText(LoginActivity.this, "请输入账号", Toast.LENGTH_SHORT).show();
                     else {
@@ -104,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                String result = "";
+                                String result;
                                 if(!id.equals("")) {
                                     // 发送数据，获取对象
                                     result = netUtils.loginByPost(getUserInfo(), DataUtils.LoginUrl);
@@ -112,10 +115,10 @@ public class LoginActivity extends AppCompatActivity {
                                         studentBean = parseGson(result);
                                         //Log.e("登陆成功：",studentBean.student.get(0).sId);
                                         Log.i("tag", "登陆成功");
-                                        handler.sendEmptyMessage(111);
+                                        handler.sendEmptyMessage(SUCCESS);
                                     }else{
                                         Log.i("tag", "登陆失败");
-                                        handler.sendEmptyMessage(222);
+                                        handler.sendEmptyMessage(FAILURE);
                                     }
                                 }
                             }
@@ -145,6 +148,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private String getUserInfo() {
 
         Gson gson = new Gson();
@@ -161,4 +169,42 @@ public class LoginActivity extends AppCompatActivity {
         Gson gson = new Gson();
         return gson.fromJson(result,StudentBean.class);
     }
+
+    private void setDataToSql() {
+
+        Observable<Boolean> observable =Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                SQLiteDatabase db = dbHelper.getReadableDatabase();
+                ContentValues v = new ContentValues();
+                v.put("id",studentBean.student.get(0).sId);
+                v.put("name",studentBean.student.get(0).sName);
+                v.put("img",studentBean.student.get(0).sImg);
+                Long i =db.insert("student",null,v);
+                db.close();
+                subscriber.onNext(i==0);
+            }
+        });
+        Subscriber<Boolean> studentBeanSubscriber = new Subscriber<Boolean>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Boolean studentBean) {
+                Log.d("setdata to sqlite is?",studentBean.toString());
+
+            }
+        };
+        observable.subscribe(studentBeanSubscriber);
+
+
+    }
+
 }

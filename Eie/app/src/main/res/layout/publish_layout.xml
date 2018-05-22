@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/bottom"
+    android:orientation="horizontal"
+    android:layout_alignParentBottom="true"
+    android:background="@color/black_80"
+    android:layout_width="match_parent"
+    android:layout_height="?actionBarSize"
+    android:layout_below="@+id/scroll"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/video_reText"
+                android:layout_width="0dp"
+
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/default_general_margin"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:drawablePadding="@dimen/default_general_margin"
+                android:ellipsize="start"
+                android:hint="评论"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/gray_20"
+                android:textSize="@dimen/default_medium_text_size" />
+            <Button
+                android:id="@+id/video_btn_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/black_80"
+                android:gravity="center"
+                android:text="发表"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/default_medium_text_size" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

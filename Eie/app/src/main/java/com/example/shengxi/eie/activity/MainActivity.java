@@ -1,162 +1,152 @@
 package com.example.shengxi.eie.activity;
 
-import android.support.v4.app.Fragment;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.Window;
-import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.view.MenuItem;
+import android.view.ViewStub;
 import android.widget.Toast;
 
 import com.example.shengxi.eie.R;
 import com.example.shengxi.eie.fragment.FragmenUser;
 import com.example.shengxi.eie.fragment.FragmentCom;
 import com.example.shengxi.eie.fragment.FragmentMsg;
+import com.example.shengxi.eie.fragment.FragmentSplah;
 import com.example.shengxi.eie.fragment.FragmentStudy;
+import com.example.shengxi.eie.utils.BottomNavigationViewHelper;
 
+import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.R.attr.fragment;
+import io.vov.vitamio.Vitamio;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity {
 
-    private TextView tabStudy;
-    private TextView tabCom;
-    private TextView tabMsg;
-    private TextView tabUser;
+    private BottomNavigationView mBottomNavigationView;
 
-    private FrameLayout contaner;
     private FragmentManager frameManager;
     private FragmentStudy fragmentStudy;
-
     FragmentCom fragmentCom;
     FragmentMsg fragmentMsg;
     FragmenUser fragmentUser;
 
-    Fragment fragment;
-
+    android.app.Fragment fragments[];
+    private FragmentSplah mFragmentSplah;
     private FragmentTransaction ft;
+    private int lastShowFragment = 0;
+
+    private Handler handler = new Handler();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_main);
-        initView();
-        setFirstFragment();
-    }
-
-    private void setFirstFragment() {
-
-        android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        hideAllFragment(transaction);
-        selected();
-        tabStudy.setSelected(true);
-        if (fragmentStudy == null) {
-            fragmentStudy = new FragmentStudy();
-            transaction.add(R.id.fragment_container, fragmentStudy);
-        } else {
-            transaction.show(fragmentStudy);
-        }
-        transaction.commit();
-    }
-
-    private void initView() {
-
-        tabStudy = (TextView) findViewById(R.id.txt_sutudy);
-        tabCom = (TextView) findViewById(R.id.txt_com);
-        tabMsg = (TextView) findViewById(R.id.txt_msg);
-        tabUser = (TextView) findViewById(R.id.txt_user);
-        contaner = (FrameLayout) findViewById(R.id.fragment_container);
-
-
-        tabStudy.setOnClickListener(this);
-        tabCom.setOnClickListener(this);
-        tabMsg.setOnClickListener(this);
-        tabUser.setOnClickListener(this);
-    }
-
-    public void selected() {
-        tabStudy.setSelected(false);
-        tabCom.setSelected(false);
-        tabMsg.setSelected(false);
-        tabUser.setSelected(false);
-    }
-
-    public void hideAllFragment(android.app.FragmentTransaction transaction) {
-        if (fragmentStudy != null) {
-            transaction.hide(fragmentStudy);
-        }
-        if (fragmentCom != null) {
-            transaction.hide(fragmentCom);
-        }
-        if (fragmentMsg != null) {
-            transaction.hide(fragmentMsg);
-        }
-        if (fragmentUser != null) {
-            transaction.hide(fragmentUser);
-        }
+    protected int getViewId() {
+        return R.layout.activity_viewtub;
     }
 
     @Override
-    public void onClick(View view) {
+    protected void initView() {
+        Vitamio.initialize(this);
+        // requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setSplashFragement();
+        ViewStub viewStub = (ViewStub) findViewById(R.id.main_viewStub);
+        viewStub.inflate();
+        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
+        initFragment();
 
-        android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        hideAllFragment(transaction);
-
-        switch (view.getId()) {
-            case R.id.txt_sutudy:
-                selected();
-                tabStudy.setSelected(true);
-                if (fragmentStudy == null) {
-                    fragmentStudy = new FragmentStudy();
-                    transaction.add(R.id.fragment_container, fragmentStudy);
-                } else {
-                    transaction.show(fragmentStudy);
-                }
-                break;
-
-            case R.id.txt_com:
-                selected();
-                tabCom.setSelected(true);
-                if (fragmentCom == null) {
-                    fragmentCom = new FragmentCom();
-                    transaction.add(R.id.fragment_container, fragmentCom);
-                } else {
-                    transaction.show(fragmentCom);
-                }
-                break;
-
-            case R.id.txt_msg:
-                selected();
-                tabMsg.setSelected(true);
-                if (fragmentMsg == null) {
-                    fragmentMsg = new FragmentMsg();
-                    transaction.add(R.id.fragment_container, fragmentMsg);
-                } else {
-                    transaction.show(fragmentMsg);
-                }
-                break;
-
-            case R.id.txt_user:
-                selected();
-                tabUser.setSelected(true);
-                if (fragmentUser == null) {
-                    fragmentUser = new FragmenUser();
-                    transaction.add(R.id.fragment_container, fragmentUser);
-                } else {
-                    transaction.show(fragmentUser);
-                }
-                break;
-        }
-        transaction.commit();
     }
+
+    @Override
+    protected void setData() {
+        BottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
+
+        int[][] states = new int[][]{new int[]{-android.R.attr.state_checked}, new int[]{android.R.attr.state_checked}};
+        int[] colors = new int[]{getResources().getColor(R.color.gray_20), getResources().getColor(R.color.black_80)};
+        ColorStateList csl = new ColorStateList(states, colors);
+        mBottomNavigationView.setItemIconTintList(csl);
+        mBottomNavigationView.setItemTextColor(csl);
+        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.item_study:
+                        if (lastShowFragment != 0) {
+                            switchFragment(lastShowFragment, 0);
+                            lastShowFragment = 0;
+                        }
+                        return true;
+                    case R.id.item_com:
+                        if (lastShowFragment != 1) {
+                            switchFragment(lastShowFragment, 1);
+                            lastShowFragment = 1;
+                        }
+                        return true;
+                    case R.id.item_msg:
+                        if (lastShowFragment != 2) {
+                            switchFragment(lastShowFragment, 2);
+                            lastShowFragment = 2;
+                        }
+                        return true;
+                    case R.id.item_user:
+                        if (lastShowFragment != 3) {
+                            switchFragment(lastShowFragment, 3);
+                            lastShowFragment = 3;
+                        }
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        getWindow().getDecorView().post(new Runnable() {
+            @Override
+            public void run() {
+                // 开启延迟加载,也可以不用延迟可以立马执行（我这里延迟是为了实现fragment里面的动画效果的耗时）
+                handler.postDelayed(new DelayRunnable(MainActivity.this, mFragmentSplah), 4000);
+            }
+        });
+    }
+
+    private void switchFragment(int lastShowFragment, int i) {
+        android.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.hide(fragments[lastShowFragment]);
+        if (!fragments[i].isAdded()) {
+            ft.add(R.id.fragment_container, fragments[i]);
+        }
+        ft.show(fragments[i]).commitAllowingStateLoss();
+    }
+
+    private void initFragment() {
+        fragmentStudy = new FragmentStudy();
+        fragmentCom = new FragmentCom();
+        fragmentMsg = new FragmentMsg();
+        fragmentUser = new FragmenUser();
+        fragments = new android.app.Fragment[]{fragmentStudy, fragmentCom, fragmentMsg, fragmentUser};
+        lastShowFragment = 0;
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, fragmentStudy)
+                .show(fragmentStudy)
+                .commit();
+
+    }
+
+    /**
+     * 设置fragment式splashActivity
+     */
+    private void setSplashFragement() {
+
+        mFragmentSplah = new FragmentSplah();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.frame, mFragmentSplah);
+        ft.commit();
+    }
+
 
     /**
      * 返回键功能
@@ -186,6 +176,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             android.os.Process.killProcess(android.os.Process.myPid()); // 获取PID
             System.exit(0);
+        }
+    }
+
+    static class DelayRunnable implements Runnable {
+
+        private WeakReference<Context> contextWeakReference;
+        private WeakReference<FragmentSplah> splashFragmentWeakReference;
+
+        public DelayRunnable(Context context, FragmentSplah f) {
+            contextWeakReference = new WeakReference<Context>(context);
+            splashFragmentWeakReference = new WeakReference<FragmentSplah>(f);
+        }
+
+        @Override
+        public void run() {
+            //移除Fragment
+            if (contextWeakReference != null) {
+                FragmentSplah splashFragment = splashFragmentWeakReference.get();
+                if (splashFragment == null) {
+                    return;
+                }
+                FragmentActivity activity = (FragmentActivity) contextWeakReference.get();
+                FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+                transaction.remove(splashFragment);
+                transaction.commit();
+            }
+
         }
     }
 }

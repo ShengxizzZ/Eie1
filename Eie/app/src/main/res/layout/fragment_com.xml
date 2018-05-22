@@ -4,7 +4,8 @@
     android:layout_height="match_parent">
     <LinearLayout android:background="@color/black_80"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize">
+        android:layout_height="?actionBarSize"
+        android:fitsSystemWindows="true">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -65,16 +66,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="0.1dp"
                 android:background="@color/gray_20"/>
-            <com.example.shengxi.eie.utils.MyGridView
-                android:id="@+id/com_list"
-                android:layout_width="match_parent"
-                android:verticalSpacing="5dp"
-                android:horizontalSpacing="5dp"
-                android:background="@android:color/white"
-                android:layout_height="wrap_content"
-                android:numColumns="3">
+            <!--<com.example.shengxi.eie.utils.MyGridView-->
+                <!--android:id="@+id/com_list"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:verticalSpacing="5dp"-->
+                <!--android:horizontalSpacing="5dp"-->
+                <!--android:background="@android:color/white"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:numColumns="3">-->
 
-            </com.example.shengxi.eie.utils.MyGridView>
+            <!--</com.example.shengxi.eie.utils.MyGridView>-->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/fra_com_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="none">
+
+            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
     </ScrollView>

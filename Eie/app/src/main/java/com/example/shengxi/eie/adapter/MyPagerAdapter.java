@@ -3,6 +3,7 @@ package com.example.shengxi.eie.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,11 @@ public class MyPagerAdapter extends PagerAdapter{
 
     public Object instantiateItem(ViewGroup container, final int position) {
         ImageView imageView=list.get(position);
-        container.addView(imageView);
+        CardView cardView = new CardView(context);
+        cardView.addView(imageView);
+        cardView.setRadius(2);
+        cardView.setElevation(3);
+        container.addView(cardView);
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override

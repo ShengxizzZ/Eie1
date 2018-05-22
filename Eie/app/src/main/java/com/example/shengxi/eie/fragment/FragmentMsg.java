@@ -1,141 +1,97 @@
 package com.example.shengxi.eie.fragment;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shengxi.eie.R;
 import com.example.shengxi.eie.activity.ForumInfoActivity;
 import com.example.shengxi.eie.activity.ForumPostActivity;
-import com.example.shengxi.eie.adapter.BaseRecyclerViewAdapter;
 import com.example.shengxi.eie.adapter.ForumAdapter;
 import com.example.shengxi.eie.beans.ForumBean;
-import com.example.shengxi.eie.utils.DataUtils;
-import com.example.shengxi.eie.utils.MyRecyclerView;
+
+import com.example.shengxi.eie.network.ApiService;
+import com.example.shengxi.eie.network.manager.RetrofitNetManager;
+
 import com.example.shengxi.eie.utils.NetUtils;
 import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
+ * 实现获取论坛界面
  * Created by ShengXi on 2017/4/12.
  */
 
-public class FragmentMsg extends Fragment{
+public class FragmentMsg extends Fragment {
 
-    private PullToRefreshListView reList;
-    private ImageView addImageView;
-    private NetUtils utils = new NetUtils();
-    private static ForumBean forumBean;
+    @BindView(R.id.forum_pullListView)
+    PullToRefreshListView reList;
+
+    @BindView(R.id.forum_add)
+    ImageView addImageView;
+
+    Unbinder butterKnife;
+    private static ForumBean mForumBean = null;
     private ForumAdapter adapter;
-    private static final String TIMES = "10";
-    private Observable observable = null;
-
-    Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == 1){
-                adapter = new ForumAdapter(getActivity(),forumBean);
-                reList.setAdapter(adapter);
-
-            }else if (msg.what == 2){
-                adapter.notifyDataSetChanged();
-            }
-            reList.onRefreshComplete();
-        }
-    };
-    @Override
-    public void onResume() {
-        super.onResume();
 
 
-    }
-
-    private void gotoThread() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                String data = utils.getRequestForum(TIMES, DataUtils.ForumUrl);
-                //Log.e("forumData",data);
-                if (data!=null){
-                    forumBean = parseGson(data.trim());
-                    //callBack.getData(forumBean);
-                    handler.sendEmptyMessage(1);
-
-                }
-               // Log.e("testData",data);
-            }
-        }).start();
-    }
-
-    private ForumBean parseGson(String trim) {
-        Gson gson = new Gson();
-        return gson.fromJson(trim,ForumBean.class);
-
-    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_forum,null);
-        //initView(view);
-//        if (utils.netState(getActivity())){
-//            gotoThread();
-//        }else {
-//            Toast.makeText(getActivity(),"无网络连接。。。",Toast.LENGTH_SHORT).show();
-//        }
-
-        observable = Observable.create(new () {
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+        butterKnife = ButterKnife.bind(this,view);
+        //reList = (PullToRefreshListView) view.findViewById(R.id.forum_pullListView);
+        //addImageView = (ImageView) view.findViewById(R.id.forum_add);
+        initView();
+        if (NetUtils.netState(getActivity())) {
+            gotoThread();
+        } else {
+            Toast.makeText(getActivity(), "无网络连接。。。", Toast.LENGTH_SHORT).show();
+        }
         return view;
     }
 
-    private void initView(View view) {
-        //reList = (PullToRefreshListView) view.findViewById(R.id.forum_pullListView);
-        //addImageView = (ImageView) view.findViewById(R.id.forum_add);
+    private void initView() {
+
         reList.setMode(PullToRefreshBase.Mode.BOTH);
         reList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                Log.w("CallBackTransData",forumBean.forum.get(i-1).articleTitle);
+                Log.w("CallBackTransData", mForumBean.forum.get(i - 1).articleTitle);
                 Intent in = new Intent(getActivity(), ForumInfoActivity.class);
-                String[] aryy ={forumBean.forum.get(i-1).articleUpName,
-                forumBean.forum.get(i-1).articleUpImg,forumBean.forum.get(i-1).articleMain,
-                forumBean.forum.get(i-1).articleTime,forumBean.forum.get(i-1).articleId};
-                in.putExtra("data",aryy);
+                String[] aryy = {mForumBean.forum.get(i - 1).articleUpName,
+                        mForumBean.forum.get(i - 1).articleUpImg, mForumBean.forum.get(i - 1).articleMain,
+                        mForumBean.forum.get(i - 1).articleTime, mForumBean.forum.get(i - 1).articleId};
+                in.putExtra("data", aryy);
                 startActivity(in);
 
             }
@@ -145,24 +101,18 @@ public class FragmentMsg extends Fragment{
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
 
-                if (utils.netState(getActivity())){
+                if (NetUtils.netState(getActivity())) {
                     gotoThread();
-                }else {
-                    Toast.makeText(getActivity(),"无网络连接。。。",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "无网络连接。。。", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-
-                if (utils.netState(getActivity())){
-                    gotoThread();
-                }else {
-                    Toast.makeText(getActivity(),"无网络连接。。。",Toast.LENGTH_SHORT).show();
-                }
-                handler.sendEmptyMessage(2);
             }
         });
+
 
         addImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,20 +122,61 @@ public class FragmentMsg extends Fragment{
             }
         });
     }
+    private void gotoThread() {
 
-    public interface CallBack{
-         void getData(ForumBean dataBean);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain;utf-8"), "10");
+        Log.e("thread0", "start new thread");
+        ApiService service = RetrofitNetManager.getInstance().getForumService(getActivity());
+        service.getForum(requestBody)
+                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<ResponseBody, ForumBean>() {
+                    @Override
+                    public ForumBean call(ResponseBody responseBody) {
+                        return getForumBean(responseBody);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ForumBean>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(ForumBean forumBean) {
+                        mForumBean = forumBean;
+                        adapter = new ForumAdapter(getActivity(), forumBean);
+                        reList.setAdapter(adapter);
+                        reList.onRefreshComplete();
+                    }
+                });
+    }
+
+    private ForumBean getForumBean(ResponseBody responseBody) {
+        Log.e("thread1", "start new thread");
+        Log.d("res", responseBody.toString());
+        BufferedReader br = new BufferedReader(new InputStreamReader(responseBody.byteStream()));
+        String line;
+        StringBuilder stringBuffer = new StringBuilder();
+        try {
+            while ((line = br.readLine()) != null) {
+                stringBuffer.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Gson().fromJson(stringBuffer.toString(), ForumBean.class);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        butterKnife.unbind();
 
     }
-    private CallBack callBack;
-    public void setCallBack(CallBack callBack){
-        this.callBack = callBack;
-    }
-
-
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        callBack = (CallBack) activity;
-//    }
 }

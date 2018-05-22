@@ -19,9 +19,7 @@ package io.vov.vitamio.widget;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.os.Build;
@@ -33,10 +31,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -44,7 +42,6 @@ import android.widget.TextView;
 
 import java.lang.reflect.Method;
 
-import io.vov.vitamio.R;
 import io.vov.vitamio.utils.Log;
 import io.vov.vitamio.utils.StringUtils;
 
@@ -101,9 +98,6 @@ public class MediaController extends FrameLayout {
   private AudioManager mAM;
   private OnShownListener mShownListener;
   private OnHiddenListener mHiddenListener;
-  private ImageView mScreenStyle;
-  private Activity mActivity;
-
   @SuppressLint("HandlerLeak")
   private Handler mHandler = new Handler() {
     @Override
@@ -171,26 +165,6 @@ public class MediaController extends FrameLayout {
       mHandler.sendEmptyMessageDelayed(SHOW_PROGRESS, 1000);
     }
   };
- //将原来的Context参数改为activity备用
-  public MediaController(Activity activity, boolean fromXml, View container) {
-    super(activity);
-    //初始化AudioManager
-    initController(activity);
-    //此处的activity为后面备用。
-    mActivity = activity;
-    //设置为true
-    mFromXml = fromXml;
-    //初始化Controller布局,通过反射inflate
-    mRoot = makeControllerView();
-    if(container instanceof FrameLayout){
-      FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-              LayoutParams.WRAP_CONTENT);
-      //在父View底部
-      p.gravity = Gravity.BOTTOM;
-      mRoot.setLayoutParams(p);
-      ((FrameLayout)container).addView(mRoot);
-    }
-  }
 
   public MediaController(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -204,6 +178,21 @@ public class MediaController extends FrameLayout {
     if (!mFromXml && initController(context))
       initFloatingWindow();
   }
+  public MediaController(Context context,boolean isFromXml,View container){
+    super(context);
+    initController(context);
+    mFromXml = isFromXml;
+    mRoot = makeControllerView();
+    if (container instanceof FrameLayout){
+      FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+              ViewGroup.LayoutParams.WRAP_CONTENT);
+      p.gravity = Gravity.BOTTOM;
+      mRoot.setLayoutParams(p);
+      ((FrameLayout) container).addView(mRoot);
+    }
+  }
+
+
 
   private boolean initController(Context context) {
     mContext = context;
@@ -285,28 +274,10 @@ public class MediaController extends FrameLayout {
     mEndTime = (TextView) v.findViewById(getResources().getIdentifier("mediacontroller_time_total", "id", mContext.getPackageName()));
     mCurrentTime = (TextView) v.findViewById(getResources().getIdentifier("mediacontroller_time_current", "id", mContext.getPackageName()));
     mFileName = (TextView) v.findViewById(getResources().getIdentifier("mediacontroller_file_name", "id", mContext.getPackageName()));
-      /*此处修改，增加全屏按钮及响应点击事件*/
-//      mScreenStyle = (ImageView) v.findViewById(R.id.ib_full_small);
-//      mScreenStyle.setOnClickListener(new OnClickListener() {
-//          @Override
-//          public void onClick(View view) {
-//              if(mActivity.getRequestedOrientation()== ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
-//                  mScreenStyle.setSelected(true);
-//                  mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//              }else{
-//                  mScreenStyle.setSelected(false);
-//                  mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//              }
-//          }
-//      });
-
-      if (mFileName != null)
+    if (mFileName != null)
       mFileName.setText(mTitle);
   }
 
-    public void setFullScreenIconState(Boolean isSelected){
-        mScreenStyle.setSelected(isSelected);
-    }
   public void setMediaPlayer(MediaPlayerControl player) {
     mPlayer = player;
     updatePausePlay();

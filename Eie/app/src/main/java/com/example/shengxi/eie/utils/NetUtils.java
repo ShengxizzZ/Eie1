@@ -1,16 +1,29 @@
 package com.example.shengxi.eie.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.shengxi.eie.beans.ClassMenuBean;
 import com.example.shengxi.eie.beans.students.Users;
 import com.google.gson.Gson;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,10 +35,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import okhttp3.ResponseBody;
+
 /**
+ *
  * Created by ShengXi on 2017/4/19.
  */
 
@@ -81,13 +98,14 @@ public class NetUtils {
         return null;
     }
 
-    public boolean netState(Context context) {
+    public static boolean netState(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = cm.getActiveNetworkInfo();
 
         if (info != null) {
             return info.isAvailable();
         } else {
+            Toast.makeText(context,"wu",Toast.LENGTH_SHORT).show();
             return false;
         }
     }
@@ -245,5 +263,65 @@ public class NetUtils {
 
             return "";
         }
+    }
+    /*网络请求下载apk
+     */
+    public void downLoadApk(String url, final String path){
+        //切割网址获取文件名
+        final String fileName = url.split("/")[url.split("/").length - 1];
+
+        OkHttpClient client = new OkHttpClient();
+        client.setConnectTimeout(1000,TimeUnit.MICROSECONDS);
+        client.setReadTimeout(1000,TimeUnit.MICROSECONDS);
+        client.setWriteTimeout(1000,TimeUnit.MICROSECONDS);
+        Request re = new Request.Builder().url(url)
+               // .post(RequestBody.create(MediaType.parse(""),""))
+                .build();
+        client.newCall(re).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+
+                if (response!=null){
+                    InputStream is = response.body().byteStream();
+                    FileOutputStream fos = new FileOutputStream(new File(path+fileName));
+                    int len = 0;
+                    byte[] buff = new byte[2048];
+                    while ((len = is.read(buff))!=-1){
+                        fos.write(buff,0,len);
+                    }
+                    fos.flush();
+                    fos.close();
+                    is.close();
+                }
+            }
+        });
+
+
+    }
+    public static void installApk(Activity context, String path){
+
+        Intent intent = new Intent("android.intent.action.VIEW");
+        intent.addCategory("android.intent.action.DEFAULT");
+        intent.setDataAndType(Uri.fromFile(new File(path)),"application/vnd.android.package-archive");
+        context.startActivityForResult(intent,0);
+    }
+
+    public static String getResponseBody(ResponseBody requestBody) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(requestBody.byteStream()));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            while ((line= br.readLine())!=null){
+                sb.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
     }
 }

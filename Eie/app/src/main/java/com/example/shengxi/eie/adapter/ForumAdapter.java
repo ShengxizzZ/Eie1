@@ -19,22 +19,24 @@ import com.example.shengxi.eie.R;
 import com.example.shengxi.eie.beans.ForumBean;
 import com.example.shengxi.eie.utils.CircleImageView;
 import com.example.shengxi.eie.utils.DataUtils;
+import com.squareup.picasso.Picasso;
 
 /**
+ *
  * Created by ShengXi on 2017/4/23.
  */
 
 public class ForumAdapter extends BaseAdapter {
 
     private LayoutInflater inflater;
-    private RequestQueue queue;
     private ForumBean data;
+    private Context c;
 
     public ForumAdapter(Context context, ForumBean data) {
-        queue = Volley.newRequestQueue(context);
         if (data != null) {
             this.inflater = LayoutInflater.from(context);
             this.data = data;
+            this.c = context;
         }
     }
 
@@ -52,7 +54,6 @@ public class ForumAdapter extends BaseAdapter {
     public Object getItem(int i) {
         return null;
     }
-
 
 
     @Override
@@ -77,23 +78,27 @@ public class ForumAdapter extends BaseAdapter {
         } else {
             item = (Item) view.getTag();
         }
-        ImageRequest request = new ImageRequest(DataUtils.baseUrl + data.forum.get(i).articleUpImg, new Response.Listener<Bitmap>() {
-            @Override
-            public void onResponse(Bitmap bitmap) {
-                item.imageView.setImageBitmap(bitmap);
-            }
-        }, 0, 0, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        });
-        queue.add(request);
-
+//        ImageRequest request = new ImageRequest(DataUtils.baseUrl + data.forum.get(i).articleUpImg, new Response.Listener<Bitmap>() {
+//            @Override
+//            public void onResponse(Bitmap bitmap) {
+//                item.imageView.setImageBitmap(bitmap);
+//            }
+//        }, 0, 0, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError volleyError) {
+//
+//            }
+//        });
+//        queue.add(request);
+        Picasso.with(c)
+                .load(DataUtils.baseUrl + data.forum.get(i).articleUpImg)
+                .placeholder(R.mipmap.ico_user_default)
+                .error(R.mipmap.ico_user_default)
+                .into(item.imageView);
         item.upName.setText(data.forum.get(i).articleUpName);
-        item.diggs.setText(String.valueOf(data.forum.get(i).ariticleDiggs)+"赞");
-        item.comments.setText(String.valueOf(data.forum.get(i).ariticleComments)+"评论");
-        Log.e("comments",String.valueOf(data.forum.get(i).ariticleComments));
+        item.diggs.setText(String.valueOf(data.forum.get(i).ariticleDiggs) + "赞");
+        item.comments.setText(String.valueOf(data.forum.get(i).ariticleComments) + "评论");
+        Log.e("comments", String.valueOf(data.forum.get(i).ariticleComments));
 
 
         item.time.setText(data.forum.get(i).articleTime);

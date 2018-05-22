@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,62 +15,74 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shengxi.eie.R;
+import com.example.shengxi.eie.base.BaseHandler;
 import com.example.shengxi.eie.beans.Forum;
 import com.example.shengxi.eie.utils.DataBaseHelper;
 import com.example.shengxi.eie.utils.DataUtils;
 import com.example.shengxi.eie.utils.NetUtils;
 import com.google.gson.Gson;
-import com.handmark.pulltorefresh.library.internal.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
+ *
  * Created by ShengXi on 2017/5/11.
  */
 
 public class ForumPostActivity extends AppCompatActivity {
 
     private static final String SUCCESS = "SUCCESS";
-    private EditText postTitle;
-    private EditText postSummary;
-    private ImageView fourmPostBack;
-    private EditText postMain;
-    private TextView textView;
+    @BindView(R.id.post_title)
+    EditText postTitle;
+
+    @BindView(R.id.post_summary)
+    EditText postSummary;
+
+    @BindView(R.id.post_back)
+    ImageView fourmPostBack;
+
+    @BindView(R.id.post_main)
+    EditText postMain;
+
+    @BindView(R.id.post_ok)
+    TextView textView;
+
     private String title;
     private String summary;
     private String main;
     private NetUtils utils;
-    Handler handler = new Handler() {
+
+    Handler handler = new BaseHandler<>(new BaseHandler.BaseHandlerCallBack() {
 
         @Override
-        public void handleMessage(Message msg) {
+        public void callBack(Message msg) {
             if (msg.what == 1) {
                 Toast.makeText(ForumPostActivity.this, "发表成功", Toast.LENGTH_SHORT).show();
                 finish();
-
             } else if (msg.what == 2) {
                 Toast.makeText(ForumPostActivity.this, "发表失败", Toast.LENGTH_SHORT).show();
             }
         }
-    };
-
+    });
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_post);
+        ButterKnife.bind(this);
         initView();
     }
 
     private void initView() {
-        utils = new NetUtils();
-        postMain = (EditText) findViewById(R.id.post_main);
-        postSummary = (EditText) findViewById(R.id.post_summary);
-        postTitle = (EditText) findViewById(R.id.post_title);
-        textView = (TextView) findViewById(R.id.post_ok);
-        fourmPostBack = (ImageView) findViewById(R.id.post_back);
 
+        utils = new NetUtils();
+        if (postMain.getText().length()>=0&&postTitle.getText().length()>=0){
+            textView.setVisibility(View.VISIBLE);
+        }
         fourmPostBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,24 +91,19 @@ public class ForumPostActivity extends AppCompatActivity {
         });
 
         textView.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 main = postMain.getText().toString();
                 summary = postSummary.getText().toString();
                 title = postTitle.getText().toString();
-
                 if (("".equals(main) || "".equals(summary) || "".equals(title))) {
-
                     Toast.makeText(ForumPostActivity.this, "有一行为空！", Toast.LENGTH_SHORT).show();
                 } else {
-
                     Log.w("不为空", "不为空");
                     if (utils.netState(ForumPostActivity.this)) {
                         gotoThread();
                     }
                 }
-
             }
         });
     }
@@ -110,13 +116,11 @@ public class ForumPostActivity extends AppCompatActivity {
                 String result = utils.loginByPost(getDate(), DataUtils.ForumUpUrl);
                 Log.w("data", getDate());
                 if (!"".equals(result)) {
-
                     if (SUCCESS.equals(result)) {
                         handler.sendEmptyMessage(1);
                     }
                 } else {
                     handler.sendEmptyMessage(2);
-
                 }
             }
         }).start();
@@ -143,8 +147,8 @@ public class ForumPostActivity extends AppCompatActivity {
         Cursor cur = db.rawQuery("select *from student", null);
         while (cur.moveToNext()) {
             sid = cur.getString(cur.getColumnIndex("id"));
-
         }
+        cur.close();
         db.close();
         return sid;
     }

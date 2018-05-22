@@ -1,151 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:FrameLayoutandroid="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/videogroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/black">
+    <android.support.design.widget.CoordinatorLayout
 
-        <io.vov.vitamio.widget.VideoView
-            android:id="@+id/videoView"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
-
-        <ImageView
-            android:id="@+id/iv_video_thumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
-
-        <ImageView
-            android:id="@+id/iv_video_start"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:focusable="false"
-            android:padding="20dp"
-            android:src="@mipmap/video_play" />
-        <TextView android:id="@+id/precent"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@android:color/white"
-            android:layout_height="wrap_content" />
-
-    </FrameLayout>
-    <ScrollView android:layout_above="@+id/bottom"
-        android:layout_below="@+id/videogroup"
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:fitsSystemWindows="true">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/toolbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+                app:statusBarScrim="@android:color/transparent">
+
+                <!--封面图片-->
+
+                <!--视频及弹幕控件-->
+                <FrameLayout
+                    android:id="@+id/videogroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    app:layout_collapseMode="parallax">
+
+                    <io.vov.vitamio.widget.VideoView
+                        android:id="@+id/videoView"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp" />
+
+                    <ImageView
+                        android:id="@+id/iv_video_thumbnail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/iv_video_start"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:focusable="false"
+                        android:padding="20dp"
+                        android:src="@mipmap/video_play" />
+
+                    <TextView
+                        android:id="@+id/precent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textColor="@android:color/white" />
+
+                </FrameLayout>
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin">
+
+                    <!--自定义带图片的立即播放按钮-->
+                    <android.support.v7.widget.ButtonBarLayout
+                        android:id="@+id/playButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center_horizontal"
+                            android:src="@mipmap/video_play" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="立即播放"
+                            android:textColor="#ffffff" />
+                    </android.support.v7.widget.ButtonBarLayout>
+
+                </android.support.v7.widget.Toolbar>
+            </android.support.design.widget.CollapsingToolbarLayout>
+        </android.support.design.widget.AppBarLayout>
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            app:layout_behavior="@string/appbar_scrolling_behavior">
 
-
-            <View android:background="@color/gray_20"
-                android:layout_width="match_parent"
-                android:layout_height="10dp"/>
-
-            <TextView
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:textColor="@color/gray_20"
-                android:text="简介："
-                android:paddingLeft="10dp"
-                android:textSize="18sp" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.2dp"
-                android:paddingBottom="5dp"
-                android:background="@color/gray_20"/>
-            <TextView android:id="@+id/video_title"
-                android:layout_width="match_parent"
-                android:paddingLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"/>
-
-            <TextView android:id="@+id/video_name"
-                android:layout_width="match_parent"
-                android:paddingLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_height="wrap_content"
-                android:text="教师：王昱珩"/>
-            <TextView android:id="@+id/video_summary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:layout_marginBottom="10dp"
-                android:text="概述：sdjflksjdkl史蒂夫就卡了绝对是开关即可上岛咖啡建设路口京东方"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.2dp"
-                android:paddingBottom="5dp"
-                android:background="@color/gray_20"/>
-
-            <TextView android:paddingTop="10dp"
-                android:layout_width="match_parent"
-                android:paddingLeft="10dp"
-                android:background="@android:color/white"
-                android:layout_height="wrap_content"
-                android:text="热门评论"/>
-            <ListView android:id="@+id/video_comments"
-                android:layout_width="match_parent"
-                android:divider="@null"
-                android:layout_height="wrap_content">
-
-            </ListView>
-
-        </LinearLayout>
-
-    </ScrollView>
-    <LinearLayout android:id="@+id/bottom"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:background="@color/black_80"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize">
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:id="@+id/video_reText"
-                    android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
 
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="@dimen/default_general_margin"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:drawablePadding="@dimen/default_general_margin"
-                    android:ellipsize="start"
-                    android:hint="评论"
-                    android:maxLines="1"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="@color/gray_20"
-                    android:textSize="@dimen/default_medium_text_size" />
-                <Button
-                    android:id="@+id/video_btn_ok"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@color/black_80"
-                    android:gravity="center"
-                    android:text="发表"
-                    android:textColor="@android:color/white"
-                    android:textSize="@dimen/default_medium_text_size" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:background="@color/gray_20" />
+
+                <TextView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:paddingLeft="10dp"
+                    android:text="简介："
+                    android:textColor="@color/gray_20"
+                    android:textSize="18sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:background="@color/gray_20"
+                    android:paddingBottom="5dp" />
+
+                <TextView
+                    android:id="@+id/video_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:paddingLeft="5dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/video_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:paddingLeft="5dp"
+                    android:text="教师：王昱珩" />
+
+                <TextView
+                    android:id="@+id/video_summary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:padding="5dp"
+                    android:text="概述：sdjflksjdkl史蒂夫就卡了绝对是开关即可上岛咖啡建设路口京东方" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:background="@color/gray_20"
+                    android:paddingBottom="5dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:text="热门评论" />
+
+                <ListView
+                    android:id="@+id/video_comments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@null">
+
+                </ListView>
+
             </LinearLayout>
-        </ScrollView>
 
-    </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+        <!--<android.support.v4.widget.NestedScrollView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:layout_behavior="@string/appbar_scrolling_behavior">-->
+
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="@string/test"-->
+                <!--android:textSize="100sp" />-->
+        <!--</android.support.v4.widget.NestedScrollView>-->
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <include layout="@layout/publish_layout" />
 
 </RelativeLayout>
+
+
+
+

@@ -55,7 +55,7 @@ import java.util.List;
  * Created by ShengXi on 2017/4/24.
  */
 
-public class ForumInfoActivity extends AppCompatActivity implements FragmentMsg.CallBack{
+public class ForumInfoActivity extends AppCompatActivity{
 
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILS = "FAILS";
@@ -240,12 +240,7 @@ public class ForumInfoActivity extends AppCompatActivity implements FragmentMsg.
     }
 
 
-    @Override
-    public void getData(ForumBean dataBean) {
-        if (dataBean!=null){
-            Log.w("CallBackData",dataBean.toString());
-        }
-    }
+
 
     public boolean isEmpty(){
         DataBaseHelper dbHelper = new DataBaseHelper(this);

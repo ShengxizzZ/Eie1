@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Eie.iml" filepath="$PROJECT_DIR$/Eie.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/pulltorefresh1/pulltorefresh1.iml" filepath="$PROJECT_DIR$/pulltorefresh1/pulltorefresh1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/smart-loading-layout/smart-loading-layout.iml" filepath="$PROJECT_DIR$/smart-loading-layout/smart-loading-layout.iml" />
       <module fileurl="file://$PROJECT_DIR$/vitamio/vitamio.iml" filepath="$PROJECT_DIR$/vitamio/vitamio.iml" />
     </modules>
   </component>
